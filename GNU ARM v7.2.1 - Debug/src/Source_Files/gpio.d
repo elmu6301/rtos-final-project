@@ -1,5 +1,5 @@
 src/Source_Files/gpio.o: ../src/Source_Files/gpio.c \
- C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Lab7_SharedResources\src\Header_Files/gpio.h \
+ C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/gpio.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_gpio.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\device\siliconlabs\efm32pg12b\include\em_device.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\device\siliconlabs\efm32pg12b\include\efm32pg12b500f1024gl125.h \
@@ -95,9 +95,10 @@ src/Source_Files/gpio.o: ../src/Source_Files/gpio.c \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\micrium_os\kernel\include\os_type.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\micrium_os\common\include\rtos_utils.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\common\drivers\capsense.h \
- c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\slstk3402a_efm32pg12\config\capsenseconfig.h
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\slstk3402a_efm32pg12\config\capsenseconfig.h \
+ C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/game.h
 
-C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Lab7_SharedResources\src\Header_Files/gpio.h:
+C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/gpio.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_gpio.h:
 
@@ -290,3 +291,5 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\common\drivers\capsense.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\slstk3402a_efm32pg12\config\capsenseconfig.h:
+
+C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/game.h:

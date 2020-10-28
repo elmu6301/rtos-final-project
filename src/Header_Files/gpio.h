@@ -84,10 +84,11 @@ enum VIOLATION_EVENTS{
 };
 
 // Enumerations for the Button Status
-enum BUTTON_STATUS{
-	Button_Not_Pressed = 0,
-	Button_Pressed  = 1,
-	Button_Unknown = -1
+enum BUTTONS_STATUS{
+	NONE = 0,
+	BTN0 = 0x01,
+	BTN1 = 0x10,
+	BOTH = 0x11
 };
 
 // Enumerations for the Slider Status
@@ -112,8 +113,8 @@ enum DIRECTION{
 };
 
 typedef struct {
-	int update_speed_delta;
-} MESSAGE_STRUCT;
+	int dino_state;
+} BUTTON_MESSAGE_STRUCT;
 
 typedef struct{
 	int speed;

@@ -95,7 +95,7 @@ src/Source_Files/main.o: ../src/Source_Files/main.c \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\util\third_party\segger\systemview\config\global.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\app\mcu_example\slstk3402a_efm32pg12\micriumos_blink\cfg\os_cfg_trace.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\micrium_os\common\include\rtos_utils.h \
- C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Lab7_SharedResources\src\Header_Files/gpio.h \
+ C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/gpio.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_gpio.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_bus.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\micrium_os\kernel\include\os_type.h \
@@ -118,9 +118,10 @@ src/Source_Files/main.o: ../src/Source_Files/main.c \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\slstk3402a_efm32pg12\config\retargettextdisplayconfig.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\common\drivers\textdisplay.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\common\drivers\retargettextdisplay.h \
- C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Lab7_SharedResources\src\Header_Files/app.h \
+ C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/app.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_cmu.h \
- C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Lab7_SharedResources\src\Header_Files/cmu.h
+ C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/cmu.h \
+ C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/game.h
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\micrium_os\bsp\siliconlabs\generic\include\bsp_os.h:
 
@@ -314,7 +315,7 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\app\mcu_e
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\micrium_os\common\include\rtos_utils.h:
 
-C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Lab7_SharedResources\src\Header_Files/gpio.h:
+C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/gpio.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_gpio.h:
 
@@ -360,8 +361,10 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\common\drivers\retargettextdisplay.h:
 
-C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Lab7_SharedResources\src\Header_Files/app.h:
+C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/app.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_cmu.h:
 
-C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Lab7_SharedResources\src\Header_Files/cmu.h:
+C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/cmu.h:
+
+C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/game.h:

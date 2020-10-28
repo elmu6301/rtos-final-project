@@ -3,6 +3,7 @@
 //***********************************************************************************
 #include "gpio.h"
 #include "capsense.h"
+#include "game.h"
 
 #include  <common/include/common.h>
 #include  <kernel/include/os.h>
@@ -21,7 +22,7 @@
 //***********************************************************************************
 // global variables
 //***********************************************************************************
-MESSAGE_STRUCT msg;
+BUTTON_MESSAGE_STRUCT b_msg;
 
 //***********************************************************************************
 // function prototypes
@@ -39,22 +40,30 @@ void GPIO_Unified_IRQ(void) {
 	uint32_t interruptMask = GPIO_IntGet();
 	GPIO_IntClear(interruptMask);
 
-	msg.update_speed_delta = 0;
+	//Assume falling edge -> set to run
+	b_msg.dino_state = RUN;
+	int btns_state = NONE;
 	RTOS_ERR err;
-	/* Act on interrupts */
 
-	//Check Button 0
-	if (interruptMask & (1 << BUTTON0_pin)) {
-		//increase the speed by delta
-		msg.update_speed_delta += SPEED_DELTA;
+	//Check Button 0 rising edge -> set to DUCK
+	if ((interruptMask & (1 << BUTTON0_pin)) && !GPIO_PinInGet(BUTTON0_port, BUTTON0_pin)) {
+		b_msg.dino_state = JUMP;
+		btns_state |= BTN0;
+
 	}
-	//Check Button 1
-	if (interruptMask & (1 << BUTTON1_pin)) {
-		//decrease the speed by delta
-		msg.update_speed_delta -= SPEED_DELTA;
+	//Check Button 1 rising edge -> set to JUMP
+	if ((interruptMask & (1 << BUTTON1_pin)) && !GPIO_PinInGet(BUTTON1_port, BUTTON1_pin)) {
+		b_msg.dino_state = DUCK;
+		btns_state |= BTN1;
 	}
 
-	OSQPost(&BUTTON_FIFO, &msg, (OS_MSG_SIZE) sizeof(MESSAGE_STRUCT),
+	//Check to see if both buttons were pressed -> set to RUN
+	if(btns_state == BOTH){
+		b_msg.dino_state = RUN;
+	}
+
+	//Send message to UpdateDinoTask
+	OSQPost(&BUTTON_FIFO, &b_msg, (OS_MSG_SIZE) sizeof(BUTTON_MESSAGE_STRUCT),
 	OS_OPT_POST_FIFO, &err);
 }
 
@@ -85,8 +94,8 @@ void gpio_button_setup() {
 	BUTTON1_default);
 
 	//enable a rising and falling edge interrupt on each push button
-	GPIO_IntConfig(BUTTON0_port, BUTTON0_pin, true, false, true);
-	GPIO_IntConfig(BUTTON1_port, BUTTON1_pin, true, false, true);
+	GPIO_IntConfig(BUTTON0_port, BUTTON0_pin, true, true, true);
+	GPIO_IntConfig(BUTTON1_port, BUTTON1_pin, true, true, true);
 
 	///Enable GPIO interrupts
 	NVIC_ClearPendingIRQ(GPIO_EVEN_IRQn);
@@ -182,12 +191,12 @@ int sample_cap() {
  * the LED will not turn on.
  ******************************************************************************/
 void set_LED0(int pb0_status, int pb1_status, int cap_status) {
-	if ((cap_status == Slider_Left_Pressed)
-			|| (pb0_status == Button_Pressed && pb1_status == Button_Not_Pressed)) { //Turn on LED0
-		GPIO_PinOutSet(LED0_port, LED0_pin);
-	} else { //Turn off the LEDS
-		GPIO_PinOutClear(LED0_port, LED0_pin);
-	}
+//	if ((cap_status == Slider_Left_Pressed)
+//			|| (pb0_status == Button_Pressed && pb1_status == Button_Not_Pressed)) { //Turn on LED0
+//		GPIO_PinOutSet(LED0_port, LED0_pin);
+//	} else { //Turn off the LEDS
+//		GPIO_PinOutClear(LED0_port, LED0_pin);
+//	}
 
 }
 
@@ -198,12 +207,12 @@ void set_LED0(int pb0_status, int pb1_status, int cap_status) {
  * the LED will not turn on.
  ******************************************************************************/
 void set_LED1(int pb0_status, int pb1_status, int cap_status) {
-	if ((cap_status == Slider_Right_Pressed)
-			|| (pb0_status == Button_Not_Pressed && pb1_status == Button_Pressed)) { //Turn on LED1
-		GPIO_PinOutSet(LED1_port, LED1_pin);
-	} else { //Turn off the LED
-		GPIO_PinOutClear(LED1_port, LED1_pin);
-	}
+//	if ((cap_status == Slider_Right_Pressed)
+//			|| (pb0_status == Button_Not_Pressed && pb1_status == Button_Pressed)) { //Turn on LED1
+//		GPIO_PinOutSet(LED1_port, LED1_pin);
+//	} else { //Turn off the LED
+//		GPIO_PinOutClear(LED1_port, LED1_pin);
+//	}
 
 }
 
