@@ -137,7 +137,7 @@ OS_TMR CAP_SENSE_TMR;
 OS_TMR LCD_TMR;
 OS_SEM LCD_SEM;
 OS_SEM CAP_SENSE_SEM;
-OS_MUTEX SETPOINT_LOCK;
+OS_MUTEX DINO_LOCK;
 OS_MUTEX DIRECTION_LOCK;
 
 //Game Object Global Variables
@@ -205,7 +205,11 @@ int main(void) {
 	//Create Message Queue for button updates
 	OSQCreate(&BUTTON_FIFO, "Button FIFO", sizeof(BUTTON_MESSAGE_STRUCT) * 3, &err);
 	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
-//
+
+	//Create Mutex for Dino Struct
+	OSMutexCreate(&DINO_LOCK, "Dino Data Lock", &err);
+	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
+
 //	//Create Timer with a period of ~100 ms
 //	OSTmrCreate(&CAP_SENSE_TMR, "Touch Sense Timer", 0, 10, // 1 seems too long
 //			OS_OPT_TMR_PERIODIC,
@@ -395,8 +399,16 @@ static void UpdateDinoTask(void *p_arg) {
 						OS_OPT_POST_FIFO, &msg_size, (CPU_TS *) 0, &err);
 		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
 
+		//Acquire SETPOINT_LOCK
+		OSMutexPend(&DINO_LOCK, 0, OS_OPT_PEND_BLOCKING, (CPU_TS *) 0,&err);
+		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
+
 		//Update dino state
 		dino.state = msg->dino_state;
+
+		//Release SETPOINT_LOCK
+		OSMutexPost(&DINO_LOCK, OS_OPT_POST_NONE, &err);
+		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
 
 	}
 
