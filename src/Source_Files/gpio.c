@@ -162,27 +162,12 @@ int sample_pb1() {
 int sample_cap() {
 	CAPSENSE_Sense();
 	int cap_status = CAPSENSE_getSliderPosition();
-	if (cap_status < 0) {
-		return STRAIGHT;
+	if(cap_status < 0){
+		return cap_status;
 	}
-	cap_status /= 12.5; //Convert cap_status to a numberon [0,3]
-	switch (cap_status) {
-	case 0:
-		return HARD_LEFT;
-		break;
-	case 1:
-		return LEFT;
-		break;
-	case 2:
-		return RIGHT;
-		break;
-	case 3:
-		return HARD_RIGHT;
-		break;
-	default:
-		return STRAIGHT;
-		break;
-	}
+	cap_status = (MAX_GAME_SPEED-MIN_GAME_SPEED)/48.0 * cap_status + MIN_GAME_SPEED;
+
+	return cap_status;
 }
 /***************************************************************************//**
  * @brief

@@ -69,17 +69,17 @@
 #define  EX_MAIN_START_TASK_PRIO             21u
 #define  EX_MAIN_START_TASK_STK_SIZE         512u
 
-// Speed set-point task definition
+// Update Dino task definition
 #define  UPDATE_DINO_TASK_PRIO           22u
 #define  UPDATE_DINO_TASK_STK_SIZE       512u
 
-// Vehicle direction task definition
-#define  VEHICLE_DIRECTION_TASK_PRIO        22u
-#define  VEHICLE_DIRECTION_TASK_STK_SIZE    512u
+// Update game speed task definition
+#define  UPDATE_GAME_SPEED_TASK_PRIO        22u
+#define  UPDATE_GAME_SPEED_TASK_STK_SIZE    512u
 
-// Vehicle monitor task definition
-#define  VEHICLE_MONITOR_TASK_PRIO          22u
-#define  VEHICLE_MONITOR_TASK_STK_SIZE      512u
+// Game monitor task definition
+#define  GAME_MONITOR_TASK_PRIO          22u
+#define  GAME_MONITOR_TASK_STK_SIZE      512u
 
 // LCD display task definition
 #define  LCD_DISPLAY_TASK_PRIO              22u
@@ -97,6 +97,11 @@
 #define MAX_TURN_SPEED						45
 #define MIN_SPEED							-5
 #define MAX_DURR							5
+
+//Timer Periods
+#define CAP_SENSE_TMR_PERIOD				10
+
+
 /*
  *********************************************************************************************************
  *********************************************************************************************************
@@ -108,17 +113,17 @@
 static CPU_STK Ex_MainStartTaskStk[EX_MAIN_START_TASK_STK_SIZE]; //Start Task Stack
 static OS_TCB Ex_MainStartTaskTCB; //Start Task TCB
 
-//Speed Setpoint task Stack and TCB
+//Update Dino task Stack and TCB
 static CPU_STK UpdateDinoTaskStk[UPDATE_DINO_TASK_STK_SIZE];
 static OS_TCB  UpdateDinoTaskTCB;
-//
-////VehicleDirection task Stack and TCB
-//static CPU_STK VehicleDirectionTaskStk[VEHICLE_DIRECTION_TASK_STK_SIZE];
-//static OS_TCB VehicleDirectionTaskTCB;
-//
-////VehicleMonitor task Stack and TCB
-//static CPU_STK VehicleMonitorTaskStk[VEHICLE_MONITOR_TASK_STK_SIZE];
-//static OS_TCB VehicleMonitorTaskTCB;
+
+//Update Game Speed
+static CPU_STK UpdateGameSpeedTaskStk[UPDATE_GAME_SPEED_TASK_STK_SIZE];
+static OS_TCB UpdateGameSpeedTaskTCB;
+
+//Game Monitor task Stack and TCB
+static CPU_STK GameMonitorTaskStk[GAME_MONITOR_TASK_STK_SIZE];
+static OS_TCB GameMonitorTaskTCB;
 //
 ////LCDDisplay task Stack and TCB
 //static CPU_STK LCDDisplayTaskStk[LCD_DISPLAY_TASK_STK_SIZE];
@@ -132,11 +137,17 @@ static OS_TCB  UpdateDinoTaskTCB;
 static CPU_STK MyIdleTaskStk[MY_IDLE_TASK_STK_SIZE];
 static OS_TCB MyIdleTaskTCB;
 
-//Timer
+//Timers
 OS_TMR CAP_SENSE_TMR;
+OS_TMR MONITOR_TMR;
 OS_TMR LCD_TMR;
-OS_SEM LCD_SEM;
+
+//Semaphores
 OS_SEM CAP_SENSE_SEM;
+OS_SEM MONITOR_SEM;
+OS_SEM LCD_SEM;
+
+//Locks
 OS_MUTEX DINO_LOCK;
 OS_MUTEX DIRECTION_LOCK;
 
@@ -154,13 +165,14 @@ DINO_STRUCT dino;
 
 //Timer Callback Function
 void cap_sense_tmr_callback(OS_TMR * p_tmr, void * p_arg);
+void monitor_tmr_callback(OS_TMR * p_tmr, void * p_arg);
 void lcd_tmr_callback(OS_TMR * p_tmr, void * p_arg);
 
 //Task Functions
 static void Ex_MainStartTask(void *p_arg);
 static void UpdateDinoTask(void *p_arg);
-//static void VehicleDirectionTask(void *p_arg);
-//static void VehicleMonitorTask(void *p_arg);
+static void UpdateGameSpeedTask(void *p_arg);
+static void GameMonitorTask(void *p_arg);
 //static void LCDDisplayTask(void *p_arg);
 //static void LEDOutputTask(void *p_arg);
 static void MyIdleTask(void *p_arg);
@@ -210,17 +222,30 @@ int main(void) {
 	OSMutexCreate(&DINO_LOCK, "Dino Data Lock", &err);
 	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
 
-//	//Create Timer with a period of ~100 ms
-//	OSTmrCreate(&CAP_SENSE_TMR, "Touch Sense Timer", 0, 10, // 1 seems too long
-//			OS_OPT_TMR_PERIODIC,
-//			&cap_sense_tmr_callback, //callback foo
-//			(void*) 0, //p_arg
-//			&err);
-//	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
-//
-//	//Create Semaphore for the Timer
-//	OSSemCreate(&CAP_SENSE_SEM, "Touch Sense Semaphore", 0, &err);
-//	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
+	//Create Timer for the Touch Slider
+	OSTmrCreate(&CAP_SENSE_TMR, "Touch Sense Timer", 0, CAP_SENSE_TMR_PERIOD,
+			OS_OPT_TMR_PERIODIC,
+			&cap_sense_tmr_callback, //callback foo
+			(void*) 0, //p_arg
+			&err);
+	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
+
+	//Create Semaphore for the Cap_Sense Timer
+	OSSemCreate(&CAP_SENSE_SEM, "Touch Sense Semaphore", 0, &err);
+	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
+
+	//Create Timer for the Game Monitor Task
+	OSTmrCreate(&MONITOR_TMR, "Game Monitor Timer", 0, DEFAULT_GAME_SPEED,
+			OS_OPT_TMR_PERIODIC,
+			&monitor_tmr_callback, //callback foo
+			(void*) 0, //p_arg
+			&err);
+	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
+
+	//Create Semaphore for the Monitor Timer
+	OSSemCreate(&MONITOR_SEM, "Game Monitor Semaphore", 0, &err);
+	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
+
 //
 //	//Create Timer with a period of ~100 ms
 //	OSTmrCreate(&LCD_TMR, "LCD Timer", 0, 20, // 1 seems too long
@@ -267,6 +292,15 @@ void cap_sense_tmr_callback(OS_TMR * p_tmr, void * p_arg) {
 	OSSemPost(&CAP_SENSE_SEM, OS_OPT_POST_1, &err);
 	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
 }
+
+void monitor_tmr_callback(OS_TMR * p_tmr, void * p_arg) {
+	RTOS_ERR err;
+
+	//post the semaphore
+	OSSemPost(&MONITOR_SEM, OS_OPT_POST_1, &err);
+	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
+}
+
 
 void lcd_tmr_callback(OS_TMR * p_tmr, void * p_arg) {
 	RTOS_ERR err;
@@ -325,7 +359,7 @@ static void Ex_MainStartTask(void *p_arg) {
 
 	/* Create Tasks*/
 
-	//Create Setpoint Task
+	//Create Update Dino Task
 	OSTaskCreate(&UpdateDinoTaskTCB, "Update Dino Task",
 			UpdateDinoTask,
 			DEF_NULL,
@@ -334,21 +368,21 @@ static void Ex_MainStartTask(void *p_arg) {
 			0u, 0u,
 			DEF_NULL, (OS_OPT_TASK_STK_CLR ), &err);
 
-//	//Create V. Direction task
-//	OSTaskCreate(&VehicleDirectionTaskTCB, "Vehicle Direction Task",
-//			VehicleDirectionTask,
-//			DEF_NULL, VEHICLE_DIRECTION_TASK_PRIO, &VehicleDirectionTaskStk[0],
-//			(VEHICLE_DIRECTION_TASK_STK_SIZE / 10u),
-//			VEHICLE_DIRECTION_TASK_STK_SIZE, 0u, 0u,
-//			DEF_NULL, (OS_OPT_TASK_STK_CLR ), &err);
-//
-//	//Create V. Monitor task
-//	OSTaskCreate(&VehicleMonitorTaskTCB, "Vehicle Monitor Task",
-//			VehicleMonitorTask,
-//			DEF_NULL, VEHICLE_MONITOR_TASK_PRIO, &VehicleMonitorTaskStk[0],
-//			(VEHICLE_MONITOR_TASK_STK_SIZE / 10u),
-//			VEHICLE_MONITOR_TASK_STK_SIZE, 0u, 0u,
-//			DEF_NULL, (OS_OPT_TASK_STK_CLR ), &err);
+	//Create Update Game Speed task
+	OSTaskCreate(&UpdateGameSpeedTaskTCB, "Update Game Speed Task",
+			UpdateGameSpeedTask,
+			DEF_NULL, UPDATE_GAME_SPEED_TASK_PRIO, &UpdateGameSpeedTaskStk[0],
+			(UPDATE_GAME_SPEED_TASK_STK_SIZE / 10u),
+			UPDATE_GAME_SPEED_TASK_STK_SIZE, 0u, 0u,
+			DEF_NULL, (OS_OPT_TASK_STK_CLR ), &err);
+
+	//Create V. Monitor task
+	OSTaskCreate(&GameMonitorTaskTCB, "Game Monitor Task",
+			GameMonitorTask,
+			DEF_NULL, GAME_MONITOR_TASK_PRIO, &GameMonitorTaskStk[0],
+			(GAME_MONITOR_TASK_STK_SIZE / 10u),
+			GAME_MONITOR_TASK_STK_SIZE, 0u, 0u,
+			DEF_NULL, (OS_OPT_TASK_STK_CLR ), &err);
 //
 //	//Create V. Monitor task
 //	OSTaskCreate(&LCDDisplayTaskTCB, "LCD Display Task", LCDDisplayTask,
@@ -410,151 +444,81 @@ static void UpdateDinoTask(void *p_arg) {
 		OSMutexPost(&DINO_LOCK, OS_OPT_POST_NONE, &err);
 		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
 
+
+
 	}
 
 }
+
 /***************************************************************************//**
  * @brief TODO
  * @param p_arg pointer to optional data parameter for the task.
  ******************************************************************************/
-//static void VehicleMonitorTask(void *p_arg) {
-//	RTOS_ERR err;
-//	PP_UNUSED_PARAM(p_arg); /* Prevent compiler warning.                            */
-//
-//	//Variable Declaration and initialization
-//	OS_FLAGS events;
-//	int curr_speed = 0;
-//	int curr_durr;
-//	int curr_dir;
-//	int eventMask;
-//
-//	while (DEF_ON) {
-//
-//		//Pend on the event flag
-//		events = OSFlagPend(&VehicleEventGroup, //ButtonStatus event group
-//				UPDATE_SPEED + UPDATE_DIRECTION, //Look for flags set by the buttonTask and Vehicle Direction Task
-//				0, //Wait until a flag is set
-//				OS_OPT_PEND_FLAG_SET_ANY + OS_OPT_PEND_FLAG_CONSUME, //Look for either and clear when done
-//				(CPU_TS *) 0, &err);
-//		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
-//
-//		//Update current speed and direction
-//		if (events & UPDATE_SPEED) {
-//			//Acquire SETPOINT_LOCK
-//			OSMutexPend(&SETPOINT_LOCK, 0, OS_OPT_PEND_BLOCKING, (CPU_TS *) 0,
-//					&err);
-//			APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
-//
-//			//Update curr_speed from setpoint_data
-//			curr_speed = setpoint_data.speed;
-//
-//			//Release SETPOINT_LOCK
-//			OSMutexPost(&SETPOINT_LOCK, OS_OPT_POST_NONE, &err);
-//			APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
-//
-//		}
-//		if (events & UPDATE_DIRECTION) {
-//			//Update the v_direction struct
-//
-//			//Acquire DIRECTION_LOCK
-//			OSMutexPend(&DIRECTION_LOCK, 0, OS_OPT_PEND_BLOCKING, (CPU_TS *) 0,
-//					&err);
-//			APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
-//
-//			curr_durr = v_dir_data.curr_durr;
-//			curr_dir = v_dir_data.dir;
-//
-//			//Release SETPOINT_LOCK
-//			OSMutexPost(&DIRECTION_LOCK, OS_OPT_POST_NONE, &err);
-//			APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
-//		}
-//
-//		//Clear eventMask
-//		eventMask = NO_VIOLATION;
-//
-//		//Determine if a speed violation has occurred
-//		if (curr_speed >= MAX_SPEED
-//				|| (curr_speed >= MAX_TURN_SPEED && curr_dir != STRAIGHT)
-//				|| (curr_speed < MIN_SPEED)) {
-//			eventMask |= SPEED_VIOLATION;
-//		}
-//		//Determine if a Direction violation has occurred
-//		if (curr_durr >= MAX_DURR) {
-//			eventMask |= DIRECTION_VIOLATION;
-//		}
-//
-//		if (eventMask == NO_VIOLATION) {
-//			eventMask = CLEAR_VIOLATION;
-//		}
-//
-//		//Notify the LEDOutput event of flags
-//		OSFlagPost(&ViolationEventGroup, eventMask, OS_OPT_POST_FLAG_SET, &err);
-//		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
-//	}
-//
-//}
-//
-///***************************************************************************//**
-// * @brief Tasks that reads the slider input and sets the global status variables
-// * 	for the slider to the appropriate value.
-// * @param p_arg pointer to optional data parameter for the task.
-// ******************************************************************************/
-//static void VehicleDirectionTask(void *p_arg) {
-//	RTOS_ERR err;
-//	PP_UNUSED_PARAM(p_arg); /* Prevent compiler warning.                            */
-//
-//	//Hardware setup required
-//	gpio_CAPSENSE_setup();
-//
-//	//Variable Declaration and initialization
-//	OS_FLAGS event = UPDATE_DIRECTION;
-//	int cap_status;
-//
-//	//Start Timer
-//	OSTmrStart(&CAP_SENSE_TMR, &err);
-//	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
-//
-//	//Run task
-//	while (DEF_ON) {
-//
-//		//Pend on the CAP_SENSE_SEM semaphore
-//		OSSemPend(&CAP_SENSE_SEM, 0, //1000,
-//				OS_OPT_PEND_BLOCKING, //Try making it non blocking
-//				(CPU_TS*) 0, &err);
-//		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
-//
-//		//Sample the touch sensor
-//		cap_status = sample_cap();
-//
-//		//Acquire DIRECTION_LOCK
-//		OSMutexPend(&DIRECTION_LOCK, 0, OS_OPT_PEND_BLOCKING, (CPU_TS *) 0,
-//				&err);
-//		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
-//
-//		//Update the v_direction struct
-//		if ((v_dir_data.dir < STRAIGHT && cap_status < STRAIGHT)
-//				|| (v_dir_data.dir > STRAIGHT && cap_status > STRAIGHT)) {
-//			v_dir_data.curr_durr++;
-//		} else {
-//			v_dir_data.curr_durr = 0;
-//		}
-//		v_dir_data.dir = cap_status;
-//		if (v_dir_data.dir == HARD_LEFT || v_dir_data.dir == LEFT) {
-//			v_dir_data.num_L_turns_seen++;
-//		} else if (v_dir_data.dir == HARD_RIGHT || v_dir_data.dir == RIGHT) {
-//			v_dir_data.num_L_turns_seen++;
-//		}
-//
-//		//Release DIRECTION_LOCK
-//		OSMutexPost(&DIRECTION_LOCK, OS_OPT_POST_NONE, &err);
-//		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
-//
-//		//Notify Vehicle Monitor that direction was updated
-//		OSFlagPost(&VehicleEventGroup, event, OS_OPT_POST_FLAG_SET, &err);
-//		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
-//
-//	}
-//}
+static void GameMonitorTask(void *p_arg) {
+	RTOS_ERR err;
+	PP_UNUSED_PARAM(p_arg); /* Prevent compiler warning.                            */
+
+	//Variable Declaration and initialization
+	OSTmrStart(&MONITOR_TMR, &err);
+	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
+	OS_STATE temp;
+
+	while (DEF_ON) {
+		OSSemPend(&MONITOR_SEM, 0, //1000,
+						OS_OPT_PEND_BLOCKING,
+						(CPU_TS*) 0, &err);
+		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
+		BSP_LedToggle(0);
+		OSTimeDly(5, OS_OPT_TIME_DLY, &err);
+//		temp = OSTmrStateGet (&MONITOR_TMR,&err);
+	}
+
+
+
+}
+
+/***************************************************************************//**
+ * @brief Tasks that reads the slider input and sets the global status variables
+ * 	for the slider to the appropriate value.
+ * @param p_arg pointer to optional data parameter for the task.
+ ******************************************************************************/
+static void UpdateGameSpeedTask(void *p_arg) {
+	RTOS_ERR err;
+	PP_UNUSED_PARAM(p_arg); /* Prevent compiler warning.                            */
+
+	//Hardware setup required
+	gpio_CAPSENSE_setup();
+
+	//Variable Declaration and initialization
+	int new_speed;
+	int curr_speed = DEFAULT_GAME_SPEED;
+
+	//Start Timer
+	OSTmrStart(&CAP_SENSE_TMR, &err);
+	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
+
+	//Run task
+	while (DEF_ON) {
+
+		//Pend on the CAP_SENSE_SEM semaphore
+		OSSemPend(&CAP_SENSE_SEM, 0, //1000,
+				OS_OPT_PEND_BLOCKING,
+				(CPU_TS*) 0, &err);
+		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
+
+		//Sample the touch sensor
+		new_speed = sample_cap();
+
+		if(new_speed != -1 && new_speed != curr_speed){
+			OSTmrSet (&MONITOR_TMR, 0, new_speed, &monitor_tmr_callback, //callback foo
+					(void*) 0, //p_arg
+					&err );
+			new_speed = curr_speed;
+		}
+
+
+	}
+}
 //
 ///***************************************************************************//**
 // * @brief Tasks that reads the slider input and sets the global status variables

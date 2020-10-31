@@ -188,7 +188,7 @@
 			<resource resourceType="PROJECT" workspacePath="/Blinky_fall_19_v7.2"/>
 		</configuration>
 		<configuration configurationName="GNU ARM v7.2.1 - Debug">
-			<resource resourceType="PROJECT" workspacePath="/RTOS_Lab7_SharedResources"/>
+			<resource resourceType="PROJECT" workspacePath="/RTOS_Final_Project"/>
 		</configuration>
 	</storageModule>
 </cproject>
