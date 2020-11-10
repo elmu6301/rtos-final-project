@@ -34,8 +34,10 @@
 							<tool command="arm-none-eabi-gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.base.1622456942" name="GNU ARM C Compiler" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.base">
 								<option id="gnu.c.compiler.option.include.paths.167462709" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${StudioSdkPath}/app/mcu_example/SLSTK3402A_EFM32PG12/micriumos_blink/cfg&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Graphics}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${StudioSdkPath}/app/mcu_example/SLSTK3402A_EFM32PG12/textdisplay&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${StudioSdkPath}/app/mcu_example/SLSTK3402A_EFM32PG12/micriumos_blink&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${StudioSdkPath}/app/mcu_example/SLSTK3402A_EFM32PG12/clock&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${StudioSdkPath}/platform/micrium_os&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${StudioSdkPath}/platform/micrium_os/bsp/siliconlabs/generic/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${StudioSdkPath}/util/third_party/segger/systemview/SEGGER&quot;"/>
@@ -59,6 +61,7 @@
 								</option>
 								<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.def.symbols.1387309225" name="Defined symbols (-D)" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="EFM32PG12B500F1024GL125=1"/>
+									<listOptionValue builtIn="false" value="GLIB_NO_DEFAULT_FONT=1"/>
 								</option>
 								<option id="gnu.c.compiler.option.optimization.level.658992606" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" value="gnu.c.optimization.level.none" valueType="enumerated"/>
 								<inputType id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.input.161102778" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -75,6 +78,7 @@
 								</option>
 								<option id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.as.def.symbols.1634402380" name="Defined symbols (-D)" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.as.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="EFM32PG12B500F1024GL125=1"/>
+									<listOptionValue builtIn="false" value="GLIB_NO_DEFAULT_FONT=1"/>
 								</option>
 								<inputType id="org.eclipse.cdt.core.asmSource.467955961" superClass="org.eclipse.cdt.core.asmSource"/>
 							</tool>

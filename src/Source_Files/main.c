@@ -31,6 +31,12 @@
  *********************************************************************************************************
  *********************************************************************************************************
  */
+#include <stdint.h>
+#include <stdbool.h>
+#include <math.h>
+#include <stdio.h>
+#include <time.h>
+#include <string.h>
 
 #include  <bsp_os.h>
 #include  "bsp.h"
@@ -45,14 +51,21 @@
 #include  <common/include/toolchains.h>
 #include "gpio.h"
 
-
 #include "em_device.h"
 #include "em_chip.h"
 #include "em_emu.h"
 
+#include "em_pcnt.h"
+#include "em_prs.h"
 #include "display.h"
+#include "dmd.h"
+#include "glib.h"
+#include "bspconfig.h"
 #include "textdisplay.h"
 #include "retargettextdisplay.h"
+
+
+
 
 #include "app.h"
 #include "game.h"
@@ -154,6 +167,9 @@ OS_MUTEX DIRECTION_LOCK;
 //Game Object Global Variables
 DINO_STRUCT dino;
 
+//Global glib context
+GLIB_Context_t gc;
+#define RTCC_PULSE_FREQUENCY    (64)
 
 /*
  *********************************************************************************************************
@@ -258,6 +274,25 @@ int main(void) {
 //	//Create Semaphore for the Timer
 //	OSSemCreate(&LCD_SEM, "LCD Semaphore", 0, &err);
 //	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
+	EMSTATUS status;
+	  status = DISPLAY_Init();
+	  if (DISPLAY_EMSTATUS_OK != status) {
+	    while (true)
+	      ;
+	  }
+
+	  /* Initialize the DMD module for the DISPLAY device driver. */
+	  status = DMD_init(0);
+	  if (DMD_OK != status) {
+	    while (true)
+	      ;
+	  }
+
+	  status = GLIB_contextInit(&gc);
+	  if (GLIB_OK != status) {
+	    while (true)
+	      ;
+	  }
 
 	//Create Main Task
 	OSTaskCreate(&Ex_MainStartTaskTCB, /* Create the Start Task.                               */
@@ -360,23 +395,23 @@ static void Ex_MainStartTask(void *p_arg) {
 	/* Create Tasks*/
 
 	//Create Update Dino Task
-	OSTaskCreate(&UpdateDinoTaskTCB, "Update Dino Task",
-			UpdateDinoTask,
-			DEF_NULL,
-			UPDATE_DINO_TASK_PRIO, &UpdateDinoTaskStk[0],
-			(UPDATE_DINO_TASK_STK_SIZE / 10u), UPDATE_DINO_TASK_STK_SIZE,
-			0u, 0u,
-			DEF_NULL, (OS_OPT_TASK_STK_CLR ), &err);
+//	OSTaskCreate(&UpdateDinoTaskTCB, "Update Dino Task",
+//			UpdateDinoTask,
+//			DEF_NULL,
+//			UPDATE_DINO_TASK_PRIO, &UpdateDinoTaskStk[0],
+//			(UPDATE_DINO_TASK_STK_SIZE / 10u), UPDATE_DINO_TASK_STK_SIZE,
+//			0u, 0u,
+//			DEF_NULL, (OS_OPT_TASK_STK_CLR ), &err);
+//
+//	//Create Update Game Speed task
+//	OSTaskCreate(&UpdateGameSpeedTaskTCB, "Update Game Speed Task",
+//			UpdateGameSpeedTask,
+//			DEF_NULL, UPDATE_GAME_SPEED_TASK_PRIO, &UpdateGameSpeedTaskStk[0],
+//			(UPDATE_GAME_SPEED_TASK_STK_SIZE / 10u),
+//			UPDATE_GAME_SPEED_TASK_STK_SIZE, 0u, 0u,
+//			DEF_NULL, (OS_OPT_TASK_STK_CLR ), &err);
 
-	//Create Update Game Speed task
-	OSTaskCreate(&UpdateGameSpeedTaskTCB, "Update Game Speed Task",
-			UpdateGameSpeedTask,
-			DEF_NULL, UPDATE_GAME_SPEED_TASK_PRIO, &UpdateGameSpeedTaskStk[0],
-			(UPDATE_GAME_SPEED_TASK_STK_SIZE / 10u),
-			UPDATE_GAME_SPEED_TASK_STK_SIZE, 0u, 0u,
-			DEF_NULL, (OS_OPT_TASK_STK_CLR ), &err);
-
-	//Create V. Monitor task
+	//Create Game Monitor task
 	OSTaskCreate(&GameMonitorTaskTCB, "Game Monitor Task",
 			GameMonitorTask,
 			DEF_NULL, GAME_MONITOR_TASK_PRIO, &GameMonitorTaskStk[0],
@@ -459,19 +494,52 @@ static void GameMonitorTask(void *p_arg) {
 	PP_UNUSED_PARAM(p_arg); /* Prevent compiler warning.                            */
 
 	//Variable Declaration and initialization
-	OSTmrStart(&MONITOR_TMR, &err);
-	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
+//	OSTmrStart(&MONITOR_TMR, &err);
+//	APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), 1);
 	OS_STATE temp;
 
+	//Phase 1 Stuff
+//	while (DEF_ON) {
+//		OSSemPend(&MONITOR_SEM, 0, //1000,
+//						OS_OPT_PEND_BLOCKING,
+//						(CPU_TS*) 0, &err);
+//		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
+//		BSP_LedToggle(0);
+//		OSTimeDly(5, OS_OPT_TIME_DLY, &err);
+////		temp = OSTmrStateGet (&MONITOR_TMR,&err);
+//	}
+	//Phase 2: testing LCD display drawing
+//	EMSTATUS status;
+
+
+//	/* Init DCDC regulator with kit specific parameters */
+//	  EMU_DCDCInit_TypeDef dcdcInit = EMU_DCDCINIT_STK_DEFAULT;
+//	  EMU_DCDCInit(&dcdcInit);
+	 /* Initialize display module */
+//	  status = DISPLAY_Init();
+//	  if (DISPLAY_EMSTATUS_OK != status) {
+//	    while (true)
+//	      ;
+//	  }
+//
+//	  /* Initialize the DMD module for the DISPLAY device driver. */
+//	  status = DMD_init(0);
+//	  if (DMD_OK != status) {
+//	    while (true)
+//	      ;
+//	  }
+//
+//	  status = GLIB_contextInit(&gc);
+//	  if (GLIB_OK != status) {
+//	    while (true)
+//	      ;
+//	  }
+
 	while (DEF_ON) {
-		OSSemPend(&MONITOR_SEM, 0, //1000,
-						OS_OPT_PEND_BLOCKING,
-						(CPU_TS*) 0, &err);
-		APP_RTOS_ASSERT_DBG((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE), ;);
-		BSP_LedToggle(0);
-		OSTimeDly(5, OS_OPT_TIME_DLY, &err);
-//		temp = OSTmrStateGet (&MONITOR_TMR,&err);
+		GLIB_drawLineH(&gc,10,10,20);
+		DMD_updateDisplay();
 	}
+
 
 
 

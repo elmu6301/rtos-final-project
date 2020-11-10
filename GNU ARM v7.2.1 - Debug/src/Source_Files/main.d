@@ -103,6 +103,8 @@ src/Source_Files/main.o: ../src/Source_Files/main.c \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_system.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_gpio.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_emu.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_pcnt.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_prs.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\common\drivers\display.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\common\drivers\emstatus.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\middleware\glib\em_types.h \
@@ -116,6 +118,10 @@ src/Source_Files/main.o: ../src/Source_Files/main.c \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\slstk3402a_efm32pg12\config\textdisplayconfig.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\slstk3402a_efm32pg12\config\displayconfig.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\slstk3402a_efm32pg12\config\retargettextdisplayconfig.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\middleware\glib\dmd\dmd.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\middleware\glib\glib\glib.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\middleware\glib\glib\glib_color.h \
+ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\middleware\glib\dmd\dmd.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\common\drivers\textdisplay.h \
  c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\common\drivers\retargettextdisplay.h \
  C:\Users\elena\Documents\College\ECEN\ 3753\ RTOS\workspace\RTOS_Final_Project\src\Header_Files/app.h \
@@ -331,6 +337,10 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_emu.h:
 
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_pcnt.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\emlib\inc\em_prs.h:
+
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\common\drivers\display.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\common\drivers\emstatus.h:
@@ -356,6 +366,14 @@ c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\slstk3402a_efm32pg12\config\displayconfig.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\slstk3402a_efm32pg12\config\retargettextdisplayconfig.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\middleware\glib\dmd\dmd.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\middleware\glib\glib\glib.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\middleware\glib\glib\glib_color.h:
+
+c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\platform\middleware\glib\dmd\dmd.h:
 
 c:\siliconlabs\simplicitystudio\v4\developer\sdks\gecko_sdk_suite\v2.6\hardware\kit\common\drivers\textdisplay.h:
 
